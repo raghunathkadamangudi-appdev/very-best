@@ -55,7 +55,13 @@
 
         <div class="form-group">
       <%= f.label :cuisine_name_cont, "Cuisine" %>
-      <%= f.text_field :cuisine_name_cont, :class => "form-control", :placeholder => "Cuisine name:" %>
+      <!--<ul>-->
+        <!--<#% @cuisines.each do |cuisine| %>-->
+      <!--    <li>-->
+      <!--    <%#= f.check_box :cuisine_name_cont, :class => "form-control" %>-->
+      <!--    </li>-->
+      <!--<%# end %>-->
+      <!--</ul>-->
     </div>
 
 <!--<div class="form-group">-->
@@ -88,13 +94,23 @@
     <table class="table table-striped table-hover">
       <tr>
         <th>Name</th>
+        <th>Venue</th>
         <th>Cuisine</th>
         <th>Actions</th>
       </tr>
 
       <% @dishes.each do |dish| %>
       <tr>
-        <td><%= dish.name %></td>
+        <td>
+          <a href="dishes/<%=dish.id%>">
+            <%= dish.name %>
+          </a>
+          </td>
+          
+        <!--<td>-->
+        <!--  <%# = dish.venue.name %>-->
+        <!--</td>-->
+
         <td>
           <% if dish.cuisine.present? %>
             <a href="/cuisines/<%= dish.cuisine.id %>">
