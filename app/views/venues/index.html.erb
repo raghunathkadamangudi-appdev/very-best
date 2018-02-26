@@ -103,8 +103,18 @@
       </tr>
 
       <% bookmarks = Bookmark.where(:user_id => current_user.id) %>
+      
+      <% venues = [] %>
+      
       <% bookmarks.each do |bookmark| %>
-      <% venue = Venue.find(bookmark.venue_id) %>
+        <% ven = bookmark.venue_id %>
+          <% if ven.in?(venues) == false %>
+            <% venues.push(ven) %>
+          <% end %>
+      <% end %>
+      
+      <% venues.each do |ven_id| %>
+      <% venue = Venue.find(ven_id) %>
       <tr>
         <td><%= venue.name %></td>
         <td><%= venue.address %></td>
@@ -123,7 +133,7 @@
       </tr>
       <% end %>
     </table>
-    <%= paginate @venues, theme: 'twitter-bootstrap-4' %>
+    <!--<%= paginate @venues, theme: 'twitter-bootstrap-4' %>-->
   </div>
 </div>
 
