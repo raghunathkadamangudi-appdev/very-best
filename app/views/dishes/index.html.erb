@@ -3,87 +3,35 @@
     Dishes
     <a href="/venues/new" class="btn btn-lg btn-success">Add a new venue</a>
   </h1>
+  
+  
+  
 </div><div class="row mb-1">
   <div class="col-md-12">
+    
     <%= search_form_for @q, :class => "collapse", :id => "dishes_filters" do |f| %>
       <p class="lead">Narrow results:</p>
 
-        <div class="form-group">
-    <%= f.label :name_cont, "Name contains" %>
-    <%= f.text_field :name_cont, :class => "form-control", :placeholder => "Name contains" %>
-  </div>
+    <div class="form-group">
+        <%= f.label :name_cont, "Name contains" %>
+        <%= f.text_field :name_cont, :class => "form-control", :placeholder => "Name contains" %>
+    </div>
 
-<div class="form-group">
-          <%#= f.label :created_at, "Created at" %>
-          <div class="row">
-            <div class='col-md-6 mb-1'>
-              <div class='input-group date' id='created_atgteqPicker'>
-                  <%#= f.text_field :created_at_gteq, :class => "form-control", :placeholder => "Created at greater than or equal to" %>
-                  <span class="input-group-addon">
-                      <span class="glyphicon glyphicon-calendar"></span>
-                  </span>
-              </div>
-            </div>
-
-            <div class='col-md-6'>
-              <div class='input-group date' id='created_atlteqPicker'>
-                  <%#= f.text_field :created_at_lteq, :class => "form-control", :placeholder => "Created at less than or equal to" %>
-                  <span class="input-group-addon">
-                      <span class="glyphicon glyphicon-calendar"></span>
-                  </span>
-              </div>
-            </div>
-          </div>
-      </div>
-      <script type="text/javascript">
-          $(function () {
-              $('#created_atgteqPicker').datetimepicker({
-                  format: 'YYYY-MM-DD hh:mm:SS'
-              });
-              $('#created_atlteqPicker').datetimepicker({
-                  useCurrent: false,
-                  format: 'YYYY-MM-DD hh:mm:SS'
-              });
-              $('#created_atgteqPicker').on("dp.change", function (e) {
-                  $('#created_atlteqPicker').data("DateTimePicker").minDate(e.date);
-              });
-              $('#created_atlteqPicker').on("dp.change", function (e) {
-                  $('#created_atgteqPicker').data("DateTimePicker").maxDate(e.date);
-              });
-          });
-      </script>
-
-        <div class="form-group">
-      <%= f.label :cuisine_name_cont, "Cuisine" %>
-      <ul>
+      
+      <div class="form-group">
         <% Cuisine.all.each do |cuisine| %>
-          <li>
-          <%= f.check_box :cuisine_name_cont, :class => "form-control" %> 
+        <label>
+          <%= check_box_tag('q[cuisine_id_eq_any][]', cuisine.id, (true if @q.cuisine_id_eq_any.try(:include?, cuisine.id))) %>
           <%= cuisine.name %>
-          </li>
-      <% end %>
-      </ul>
-    </div>
-
-<div class="form-group">
-      <%#= f.label :bookmarks_notes_cont, "Bookmark notes contains" %>
-      <%#= f.text_field :bookmarks_notes_cont, :class => "form-control", :placeholder => "Bookmark notes contains" %>
-    </div>
-
-<div class="form-group">
-      <%#= f.label :fans_username_cont, "User username contains" %>
-      <%#= f.text_field :fans_username_cont, :class => "form-control", :placeholder => "User username contains" %>
-    </div>
-
-<div class="form-group">
-      <%#= f.label :specialists_name_cont, "Venue name contains" %>
-      <%#= f.text_field :specialists_name_cont, :class => "form-control", :placeholder => "Venue name contains" %>
-    </div>
+        </label>
+        <% end %>
+      </div>
 
       <%= f.submit :class => "btn btn-primary btn-block mb-1" %>
 
       <a href="/dishes" class="btn btn-secondary btn-block mb-1">Clear filters</a>
     <% end %>
+    
     <a class="btn btn-secondary btn-block mb-1" data-toggle="collapse" href="#dishes_filters">
       Show Filters
     </a>
@@ -101,30 +49,85 @@
       </tr>
 
       <% @dishes.each do |dish| %>
+      
       <tr>
+        
         <td>
-          <a href="dishes/<%=dish.id%>">
+          
+          <a href="dishes/<%= dish.id%>">
             <%= dish.name %>
           </a>
-          </td>
           
-        <!--<td>-->
-        <!--  <%# = dish.venue.name %>-->
-        <!--</td>-->
+        </td>
+         
+      <%  if Bookmark.where(:dish_id => dish.id).empty? %>
+       
+      <td>
+        
+         <form action="/create_bookmark" method="post">
+      <!-- Hidden input for authenticity token to protect from forgery -->
+            <input name="authenticity_token" type="hidden" value="<%= form_authenticity_token %>">
 
-        <td>
+      <!-- Label and input for dish_id -->
+      
+           
+            <input type="hidden" id="dish_id" name="dish_id" value="<%= dish.id %>">
+
+      <!-- Label and input for venue_id -->
+      
+         
+
+            <%= select_tag("venue_id", options_from_collection_for_select(Venue.all, :id, :name, @bookmark.try(:venue_id)), :class => "form-control") %>
+     
+
+      <!-- Label and input for user_id -->
+            <input type="hidden" name="user_id" value="<%= current_user.id %>">
+            
+      
+
+      
+        
+        <button class="btn btn-success">
+          Create Bookmark
+        </button>
+        
+      </td>
+        
+      <% else %>
+       
+      <td>
+        
+       <% bookmark = Bookmark.where(:dish_id => dish.id).first %>
+       
+       <a href="venues/<%= bookmark.venue_id %>">
+         <%= Venue.find(bookmark.venue_id).name %>
+       </a>
+       
+      </td>
+      
+      
+      
+      <% end %>
+
+      <td>
+          
           <% if dish.cuisine.present? %>
             <a href="/cuisines/<%= dish.cuisine.id %>">
               <%= dish.cuisine.name %>
             </a>
           <% end %>
-        </td>
-        <td>
+          
+      </td>
+        
+      <td>
           <a href="/dishes/<%= dish.id %>" class="btn btn-primary">Show</a>
           <a href="/dishes/<%= dish.id %>/edit" class="btn btn-warning">Edit</a>
           <a href="/delete_dish/<%= dish.id %>" class="btn btn-danger" rel="nofollow">Delete</a>
-        </td>
+          
+      </td>
+      
       </tr>
+      
       <% end %>
     </table>
     <%= paginate @dishes, theme: 'twitter-bootstrap-4' %>
