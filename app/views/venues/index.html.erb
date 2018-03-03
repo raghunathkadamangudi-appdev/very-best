@@ -57,8 +57,8 @@
       </tr>
 
       <% specialists = Bookmark.where(:user_id => current_user.id).pluck(:venue_id) %>
-      <% specialists.each do |specialist| %>
-      <% venue = Venue.find(specialist) %>
+      <% @venues.each do |venue| %>
+      <% if specialists.include? venue.id %>
       <tr>
         <td><%= venue.name %></td>
         <td><%= venue.address %></td>
@@ -75,6 +75,7 @@
           <a href="/delete_venue/<%= venue.id %>" class="btn btn-danger" rel="nofollow">Delete</a>
         </td>
       </tr>
+      <% end %>
       <% end %>
     </table>
     <%= paginate @venues, theme: 'twitter-bootstrap-4' %>

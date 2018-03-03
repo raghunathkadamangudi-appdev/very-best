@@ -146,7 +146,7 @@
         Specialties
       </li>
 
-      <% @venue.specialties.each do |dish| %>
+      <% @venue.dishes.each do |dish| %>
         <li class="list-group-item">
           <a href="/dishes/<%= dish.id %>">
             <%= dish.name %>
